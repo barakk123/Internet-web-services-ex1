@@ -12,8 +12,8 @@
     {
       "supply_name": "Flashlights",
       "category": "Lighting",
-      "unit_price": 6.99,
-      "quantity": 35,
+      "unit_price": 19.99,
+      "quantity": 40,
       "expiration_date": null,
       "supplier": "BrightLites Ltd.",
       "location": "Warehouse C"
