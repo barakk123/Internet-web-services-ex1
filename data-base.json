@@ -1,0 +1,76 @@
+{
+  "emergency_supplies": [
+    {
+      "supply_name": "Canned Food",
+      "category": "Food",
+      "unit_price": 3.49,
+      "quantity": 60,
+      "expiration_date": "2024-12-31",
+      "supplier": "FoodProvisions Ltd.",
+      "location": "Warehouse B"
+    },
+    {
+      "supply_name": "Flashlights",
+      "category": "Lighting",
+      "unit_price": 6.99,
+      "quantity": 35,
+      "expiration_date": null,
+      "supplier": "BrightLites Ltd.",
+      "location": "Warehouse C"
+    },
+    {
+      "supply_name": "Portable Stoves",
+      "category": "Cooking",
+      "unit_price": 24.99,
+      "quantity": 12,
+      "expiration_date": null,
+      "supplier": "CookMaster Equipments",
+      "location": "Kitchen Area"
+    },
+    {
+      "supply_name": "Battery Packs",
+      "category": "Power",
+      "unit_price": 14.99,
+      "quantity": 30,
+      "expiration_date": "2025-03-15",
+      "supplier": "PowerSource Supplies",
+      "location": "Power Room"
+    },
+    {
+      "supply_name": "Emergency Tents",
+      "category": "Shelter",
+      "unit_price": 34.99,
+      "quantity": 8,
+      "expiration_date": null,
+      "supplier": "ShelterPro Ltd.",
+      "location": "Warehouse D"
+    },
+    {
+      "supply_name": "Emergency Blankets",
+      "category": "Warmth",
+      "unit_price": 9.99,
+      "quantity": 25,
+      "expiration_date": null,
+      "supplier": "WarmGoods Corp.",
+      "location": "Warehouse A"
+    },
+    {
+      "supply_name": "Drinking Water",
+      "category": "Hydration",
+      "unit_price": 1.75,
+      "quantity": 80,
+      "expiration_date": null,
+      "supplier": "Emergency Supplies Co.",
+      "location": "Warehouse A"
+    },
+    {
+      "supply_name": "First Aid Kit",
+      "category": "Medical",
+      "unit_price": 18.75,
+      "quantity": 15,
+      "expiration_date": "2025-06-30",
+      "supplier": "MediCare Supplies Inc.",
+      "location": "Medical Room"
+    }
+  ]
+}
