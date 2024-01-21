@@ -1,5 +1,9 @@
 const http = require('http');
 const url = require('url');
+const console = require('console');
+
+console.log('Starting the server...');
+
 const { emergencySuppliers, EmergencySupplierSession } = require('./emergencySupplier');
 
 const emergencySuppliersInstance = new emergencySuppliers('data-base.json');
@@ -7,6 +11,8 @@ const port = 3000;
 
 const server = http.createServer((req, res) => {
     const parsedUrl = url.parse(req.url, true);
+
+    console.log(`Received a ${req.method} request to ${parsedUrl.pathname}`);
 
     // Route to create a new supply
     if (req.method === 'POST' && parsedUrl.pathname === '/supplies') {
@@ -18,6 +24,8 @@ const server = http.createServer((req, res) => {
         req.on('end', () => {
             try {
                 const newSupplyData = JSON.parse(data);
+
+                console.log(`Creating supply: ${newSupplyData.supply_name}`);
 
                 // Validate that the request body contains the required fields
                 const requiredFields = ['supply_name', 'category', 'unit_price', 'quantity', 'expiration_date', 'supplier', 'location'];
