@@ -68,6 +68,9 @@ class emergencySuppliers {
         }
     }    
 
+    getAllSupplies() {
+        return this.data.emergency_supplies; // החזרת רשימת כל הספקים מתוך המשתנה this.data
+    }
     getSupply(supplyName, res) {
         try {
             const foundSupply = this.data.emergency_supplies.find(supply => supply.supply_name === supplyName);

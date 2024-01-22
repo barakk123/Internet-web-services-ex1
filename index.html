@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>Emergency Supplies UI</title>
+</head>
+<body>
+    <h1>Emergency Supplies Service</h1>
+    <div id="messages"></div>
+    <button onclick="fetchSupplies()">Get Supplies</button>
+    <div id="supplies-list"></div>
+    <form id="createSupplyForm">
+        <label for="supply_name">Supply Name:</label>
+        <input type="text" id="supply_name" name="supply_name" required>
+        <label for="category">Category:</label>
+        <input type="text" id="category" name="category" required>
+        <label for="unit_price">Unit Price:</label>
+        <input type="number" id="unit_price" name="unit_price" required>
+        <label for="quantity">Quantity:</label>
+        <input type="number" id="quantity" name="quantity" required>
+        <label for="expiration_date">Expiration Date:</label>
+        <input type="text" id="expiration_date" name="expiration_date" required>
+        <label for="supplier">Supplier:</label>
+        <input type="text" id="supplier" name="supplier" required>
+        <label for="location">Location:</label>
+        <input type="text" id="location" name="location" required>
+        <button type="button" onclick="createSupply()">Create Supply</button>
+    </form>
+    <script src="scripts.js"></script>
+</body>
+</html>
