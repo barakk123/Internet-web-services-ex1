@@ -73,22 +73,13 @@
       "location": "Medical Room"
     },
     {
-      "supply_name": "asdd",
-      "category": "hjgh",
-      "unit_price": "1",
-      "quantity": "1",
-      "expiration_date": "asd",
-      "supplier": "ghj",
-      "location": "asd"
-    },
-    {
-      "supply_name": "asddas",
-      "category": "fsd",
-      "unit_price": "1",
-      "quantity": "0",
-      "expiration_date": "3134",
-      "supplier": "asd",
-      "location": "ghfdg"
+      "supply_name": "asd",
+      "category": "bla",
+      "unit_price": 1,
+      "quantity": 1,
+      "expiration_date": "1995/12/01",
+      "supplier": "Updated Supplier",
+      "location": "Updated Location"
     }
   ]
 }

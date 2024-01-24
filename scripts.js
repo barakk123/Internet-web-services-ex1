@@ -1,6 +1,5 @@
 document.getElementById("createSupplyForm").addEventListener("submit", function (event) {
     event.preventDefault();
-    flag=0;
     this.reset();
 });
 
@@ -88,22 +87,17 @@ async function fetchSupplies() {
 }
 */
 
-function updateSupplyKeepTheEmptyVals(flag) {
+function updateSupplyKeepTheEmptyVals() {
     const formData = new FormData(document.getElementById("createSupplyForm"));
     const jsonData = {};
-    if(flag ==0) {
-        formData.forEach((value, key) => {
-            jsonData[key] = value;
-        });
-    }
-    else {
+    
         formData.forEach((value, key) => {
             // רק אם יש ערך, נוסיף ל־jsonData
             if (value.trim() !== "") {
                 jsonData[key] = value;
             }
         });
-    }
+    
     const supplyName = jsonData.supply_name;
 
     fetch(`http://localhost:3000/supplies/${encodeURIComponent(supplyName)}`, {
