@@ -29,47 +29,37 @@ class emergencySuppliers {
     createSupply(supply, res) {
         try {
             // Validate input fields
-            if (!supply.supply_name || !supply.category || supply.unit_price === undefined || supply.quantity === undefined || !supply.expiration_date || !supply.supplier || !supply.location) {
+            if (!supply.supply_name || !supply.category || supply.unit_price === undefined || supply.quantity === undefined || !supply.supplier || !supply.location) {
                 console.error('Invalid input: Missing required fields.');
-                if (res) {
-                    return res.status(400).json({ message: 'Bad Request - Invalid input: Missing required fields.' });
-                }
+                res.status(400).json({ message: 'Bad Request - Invalid input: Missing required fields.' });
                 return;
             }
-    
+            
             // Additional validation for numeric fields
             if (isNaN(supply.unit_price) || isNaN(supply.quantity) || supply.unit_price < 0 || supply.quantity < 0) {
                 console.error('Invalid input: Numeric fields (unit_price, quantity) must be non-negative numbers.');
-                if (res) {
-                    return res.status(400).json({ message: 'Bad Request - Invalid input: Numeric fields (unit_price, quantity) must be non-negative numbers.' });
-                }
-                return;
+                return res.status(400).json({ message: 'Bad Request - Invalid input: Numeric fields (unit_price, quantity) must be non-negative numbers.' });
             }
     
             const existingSupply = this.getSupply(supply.supply_name);
     
             if (existingSupply) {
-                // Return 409 HTTP code with a JSON message
                 console.error(`Supply with name ${supply.supply_name} already exists.`);
-                if (res) {
-                    return res.status(409).json({ message: 'Conflict - Supply already exists.' });
-                }
-                return;
+                return res.status(409).json({ message: 'Conflict - Supply already exists.' });
             }
     
             this.data.emergency_supplies.push(supply);
             this.saveData();
         } catch (error) {
             // Handle other actions for error as needed
-            console.error('Error creating supply:', error.message);
-            if (res) {
-                return res.status(500).json({ message: 'Internal Server Error' });
-            }
-        }
-    }    
+            return res.status(500).json({ message: `Internal Server Error - ${error.message}` });
+        }        
+    }
+    
+    
 
     getAllSupplies() {
-        return this.data.emergency_supplies; // החזרת רשימת כל הספקים מתוך המשתנה this.data
+        return this.data.emergency_supplies;
     }
     getSupply(supplyName, res) {
         try {

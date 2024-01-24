@@ -74,21 +74,21 @@
     },
     {
       "supply_name": "jajasd",
-      "category": "asd",
-      "unit_price": "12",
-      "quantity": "122",
-      "expiration_date": "null",
-      "supplier": "asd",
-      "location": "acxz"
+      "category": "",
+      "unit_price": "",
+      "quantity": "123",
+      "expiration_date": "",
+      "supplier": "",
+      "location": ""
     },
     {
       "supply_name": "lihad",
-      "category": "ess",
-      "unit_price": "20",
-      "quantity": "32",
-      "expiration_date": "null",
-      "supplier": "lihhad elbo",
-      "location": "israel"
+      "category": "",
+      "unit_price": "",
+      "quantity": "",
+      "expiration_date": "",
+      "supplier": "",
+      "location": ""
     }
   ]
 }

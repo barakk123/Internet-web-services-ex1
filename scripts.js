@@ -1,12 +1,18 @@
 document.getElementById("createSupplyForm").addEventListener("submit", function (event) {
     event.preventDefault();
-    // Your existing code for handling the form submission...
-
-    // Additional code to reset the form after submission
+    flag=0;
     this.reset();
 });
 
-function createSupply() {
+function handleServerResponse(response) {
+    if (response.ok) {
+        return response.json();
+    } else {
+        throw new Error(`Server error: ${response.statusText}`);
+    }
+}
+
+function createSupply(res) {
     const formData = new FormData(document.getElementById("createSupplyForm"));
     const jsonData = {};
 
@@ -21,26 +27,20 @@ function createSupply() {
         },
         body: JSON.stringify(jsonData)
     })
-    .then(response => response.json())
+    .then(handleServerResponse)
     .then(data => {
         document.getElementById("messages").innerText = data.message;
         fetchSupplies(); // Refresh supplies list after creating a new supply
     })
     .catch(error => {
         document.getElementById("messages").innerText = "Error creating supply.";
+        if (res) {
+            res.status(500).json({ message: 'Internal Server Error' });
+        }
     });
 }
 
-function fetchSupplies() {
-    // Your existing code for fetching and displaying supplies...
-}
-
-
-
 async function fetchSupplies() {
-    // כאן אתה יכול להוסיף לוגיקה נוספת לפני או אחרי שאתה שולף את רשימת הספקים מהשרת
-    // לדוגמה, הצגת הודעה למשתמש או ניהול שגיאות
-
     try {
         const response = await fetch('http://localhost:3000/supplies');
         const supplies = await response.json();
@@ -58,4 +58,90 @@ async function fetchSupplies() {
         const messagesDiv = document.getElementById('messages');
         messagesDiv.innerHTML = `<div class="error-message">${error.message}</div>`;
     }
+}
+
+/*function updateSupply() {
+    const formData = new FormData(document.getElementById("createSupplyForm"));
+    const jsonData = {};
+
+    formData.forEach((value, key) => {
+        jsonData[key] = value;
+    });
+
+    const supplyName = jsonData.supply_name;
+
+    fetch(`http://localhost:3000/supplies/${encodeURIComponent(supplyName)}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(jsonData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById("messages").innerText = data.message;
+        fetchSupplies(); // Refresh supplies list after updating a supply
+    })
+    .catch(error => {
+        document.getElementById("messages").innerText = "Error updating supply.";
+    });
+}
+*/
+
+function updateSupplyKeepTheEmptyVals(flag) {
+    const formData = new FormData(document.getElementById("createSupplyForm"));
+    const jsonData = {};
+    if(flag ==0) {
+        formData.forEach((value, key) => {
+            jsonData[key] = value;
+        });
+    }
+    else {
+        formData.forEach((value, key) => {
+            // רק אם יש ערך, נוסיף ל־jsonData
+            if (value.trim() !== "") {
+                jsonData[key] = value;
+            }
+        });
+    }
+    const supplyName = jsonData.supply_name;
+
+    fetch(`http://localhost:3000/supplies/${encodeURIComponent(supplyName)}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(jsonData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById("messages").innerText = data.message;
+        fetchSupplies(); // Refresh supplies list after updating a supply
+    })
+    .catch(error => {
+        document.getElementById("messages").innerText = "Error updating supply.";
+    });
+}
+
+function deleteSupply() {
+    const formData = new FormData(document.getElementById("createSupplyForm"));
+    const jsonData = {};
+
+    formData.forEach((value, key) => {
+        jsonData[key] = value;
+    });
+
+    const supplyName = jsonData.supply_name;
+
+    fetch(`http://localhost:3000/supplies/${encodeURIComponent(supplyName)}`, {
+        method: "DELETE"
+    })
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById("messages").innerText = data.message;
+        fetchSupplies(); // Refresh supplies list after deleting a supply
+    })
+    .catch(error => {
+        document.getElementById("messages").innerText = "Error deleting supply.";
+    });
 }

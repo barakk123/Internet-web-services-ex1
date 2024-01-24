@@ -26,8 +26,13 @@
         <input type="text" id="supplier" name="supplier" required>
         <label for="location">Location:</label>
         <input type="text" id="location" name="location" required>
-        <button type="button" onclick="createSupply()">Create Supply</button>
     </form>
+
+    <button type="button" onclick="createSupply()">Create Supply</button>
+    <button type="button" onclick="updateSupplyKeepTheEmptyVals(flag=0)">Update Supply</button>
+    <button type="button" onclick="updateSupplyKeepTheEmptyVals(flag=1)">Update but keep empty values</button>
+    <button type="button" onclick="deleteSupply()">Delete Supply</button>
+
     <script src="scripts.js"></script>
 </body>
 </html>

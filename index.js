@@ -51,6 +51,8 @@ const handleRequests = (req, res) => {
                     if (missingFields.length > 0) {
                         res.writeHead(400, { 'Content-Type': 'application/json' });
                         res.end(JSON.stringify({ message: `Bad Request - Missing required fields: ${missingFields.join(', ')}.` }));
+
+                        console.error(`Bad Request - Missing required fields: ${missingFields.join(', ')}.`);
                         return;
                     }
 
@@ -61,9 +63,19 @@ const handleRequests = (req, res) => {
                     if (invalidNumericFields.length > 0) {
                         res.writeHead(400, { 'Content-Type': 'application/json' });
                         res.end(JSON.stringify({ message: `Bad Request - Invalid input: Numeric fields (${invalidNumericFields.join(', ')}) must be non-negative numbers.` }));
+
+                        console.error(`Bad Request - Invalid input: Numeric fields (${invalidNumericFields.join(', ')}) must be non-negative numbers.`);
                         return;
                     }
 
+                    if (newSupplyData.expiration_date !== undefined) {
+                        if (newSupplyData.expiration_date === '') {
+                            newSupplyData.expiration_date = null;
+                        }
+                    } else {
+                        newSupplyData.expiration_date = null;
+                    }
+                    
                     const newSupply = new EmergencySupplierSession(
                         newSupplyData.supply_name,
                         newSupplyData.category,
@@ -79,7 +91,6 @@ const handleRequests = (req, res) => {
                     res.writeHead(200, { 'Content-Type': 'application/json' });
                     res.end(JSON.stringify({ message: 'New supply created successfully.' }));
                 } catch (error) {
-                    console.error('Error creating supply:', error.message);
                     res.writeHead(500, { 'Content-Type': 'application/json' });
                     res.end(JSON.stringify({ message: 'Internal Server Error' }));
                 }
