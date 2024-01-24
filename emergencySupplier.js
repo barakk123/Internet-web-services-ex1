@@ -29,31 +29,56 @@ class emergencySuppliers {
     createSupply(supply, res) {
         try {
             // Validate input fields
-            if (!supply.supply_name || !supply.category || supply.unit_price === undefined || supply.quantity === undefined || !supply.supplier || !supply.location) {
+            const requiredFields = ['supply_name', 'category', 'unit_price', 'quantity', 'supplier', 'location'];
+            const missingFields = requiredFields.filter(field => 
+                !supply.hasOwnProperty(field) || 
+                supply[field] === null || 
+                supply[field] === undefined || 
+                supply[field].trim() === ''
+            );
+    
+            if (missingFields.length > 0) {
                 console.error('Invalid input: Missing required fields.');
-                res.status(400).json({ message: 'Bad Request - Invalid input: Missing required fields.' });
-                return;
+                return res.status(400).json({ message: 'Bad Request - Invalid input: Missing required fields.' });
             }
-            
+    
             // Additional validation for numeric fields
-            if (isNaN(supply.unit_price) || isNaN(supply.quantity) || supply.unit_price < 0 || supply.quantity < 0) {
-                console.error('Invalid input: Numeric fields (unit_price, quantity) must be non-negative numbers.');
-                return res.status(400).json({ message: 'Bad Request - Invalid input: Numeric fields (unit_price, quantity) must be non-negative numbers.' });
+            const numericFields = ['unit_price', 'quantity'];
+            const invalidNumericFields = numericFields.filter(field => isNaN(supply[field]) || supply[field] < 0);
+    
+            if (invalidNumericFields.length > 0) {
+                console.error(`Invalid input: Numeric fields (${invalidNumericFields.join(', ')}) must be non-negative numbers.`);
+                return res.status(400).json({ message: `Bad Request - Invalid input: Numeric fields (${invalidNumericFields.join(', ')}) must be non-negative numbers.` });
             }
     
             const existingSupply = this.getSupply(supply.supply_name);
     
             if (existingSupply) {
+                // If supply with the same name already exists
                 console.error(`Supply with name ${supply.supply_name} already exists.`);
                 return res.status(409).json({ message: 'Conflict - Supply already exists.' });
             }
-    
-            this.data.emergency_supplies.push(supply);
+
+            const newSupply = new EmergencySupplierSession(
+                supply.supply_name,
+                supply.category,
+                supply.unit_price,
+                supply.quantity,
+                supply.expiration_date,
+                supply.supplier,
+                supply.location
+            );
+                
+            this.data.emergency_supplies.push(newSupply);
             this.saveData();
+            console.log(`Supply with name ${supply.supply_name} created successfully.`);
+            return res.status(200).json({ message: 'New supply created successfully.' });
         } catch (error) {
-            // Handle other actions for error as needed
+            if (res) {// Handle other actions for error as needed
+            console.error('Error creating supply:', error.message);
             return res.status(500).json({ message: `Internal Server Error - ${error.message}` });
-        }        
+            }
+        }
     }
     
     
@@ -68,9 +93,9 @@ class emergencySuppliers {
             if (foundSupply) {
                 return foundSupply;
             } else {
-                console.error(`Supply with name ${supplyName} not found.`);
                 if (res) {
                     res.status(404).json({ message: 'Not Found - Supply not found.' });
+                    console.error(`Supply with name ${supplyName} not found.`);
                 }
                 return null;
             }
@@ -91,6 +116,7 @@ class emergencySuppliers {
             // Additional validation for numeric fields
             ['unit_price', 'quantity'].forEach(field => {
                 if (updatedSupply[field] !== undefined && (isNaN(updatedSupply[field]) || updatedSupply[field] < 0)) {
+                    console.error(`Invalid input: Numeric field (${field}) must be a non-negative number.`);
                     throw new Error(`Bad Request - Invalid input: Numeric field (${field}) must be a non-negative number.`);
                 }
             });
@@ -101,6 +127,7 @@ class emergencySuppliers {
                 this.data.emergency_supplies[index] = { ...this.data.emergency_supplies[index], ...updatedSupply };
                 this.saveData();
                 if (res) {
+                    console.log(`Supply with name ${supplyName} updated successfully.`);
                     return res.status(200).json({ message: 'Supply updated successfully.' });
                 }
             } else {
@@ -109,6 +136,7 @@ class emergencySuppliers {
         } catch (error) {
             console.error('Error updating supply:', error.message);
             if (res) {
+                console.error('Error updating supply:', error.message);
                 const statusCode = error.message.includes('Bad Request') ? 400 : (error.message.includes('Not Found') ? 404 : 500);
                 return res.status(statusCode).json({ message: error.message });
             }
@@ -132,8 +160,8 @@ class emergencySuppliers {
                 this.data.emergency_supplies.splice(index, 1);
                 this.saveData();
             } else {
-                console.error(`Supply with name ${supplyName} not found.`);
                 if (res) {
+                    console.error(`Supply with name ${supplyName} not found.`);
                     return res.status(404).json({ message: 'Not Found - Supply not found.' });
                 }
             }
