@@ -29,7 +29,7 @@ Follow these instructions to set up the project on your local machine.
 
 	npm install
 
-- Running the Application
+4. Running the Application
 Start the application with the following command:
 
 	npm start
