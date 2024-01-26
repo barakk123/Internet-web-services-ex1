@@ -156,9 +156,6 @@ class emergencySuppliers {
         }
     }
     
-    
-    
-
     getAllSupplies() {
         return this.data.emergency_supplies;
     }
@@ -183,6 +180,7 @@ class emergencySuppliers {
             return null;
         }
     }
+    
     updateSupply(supplyName, updatedSupply, res) {
         try {
             if (!supplyName || !updatedSupply || Object.keys(updatedSupply).length === 0) {

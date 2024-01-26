@@ -1,12 +1,11 @@
 const http = require('http');
 const url = require('url');
 const console = require('console');
-
+const conf = require('./config');
 
 const { emergencySuppliers, EmergencySupplierSession } = require('./emergencySupplier');
 
 const emergencySuppliersInstance = new emergencySuppliers('data-base.json');
-const port = 3000;
 
 const enableCors = (req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -37,7 +36,6 @@ function isValidDate(dateString) {
 
     return true;
 }
-
 
 
 const handleRequests = (req, res) => {
@@ -131,7 +129,6 @@ const handleRequests = (req, res) => {
 
                     emergencySuppliersInstance.createSupply(newSupply, res);
                     console.log(`Supply with name ${newSupplyData.supply_name} created successfully.`);
-                    // Do not include the response here, it is already handled in createSupply
                 } catch (error) {
                     res.writeHead(500, { 'Content-Type': 'application/json' });
                     res.end(JSON.stringify({ message: `Internal Server Error - ${error.message}` }));
@@ -212,12 +209,20 @@ const handleRequests = (req, res) => {
                     
                     // Update only the supplied fields
                     Object.keys(updatedSupplyData).forEach(key => {
+                        const value = updatedSupplyData[key];
+
+                        // Skip if the value is an empty string
+                        if (value === '') {
+                            return;
+                        }
+
                         if (key === 'quantity' || key === 'unit_price') {
-                            existingSupply[key] = parseFloat(updatedSupplyData[key]);
+                            existingSupply[key] = parseFloat(value);
                         } else {
-                            existingSupply[key] = updatedSupplyData[key];
+                            existingSupply[key] = value;
                         }
                     });
+
                     
                     
                     emergencySuppliersInstance.saveData();
@@ -262,6 +267,6 @@ const handleRequests = (req, res) => {
 const server = http.createServer(handleRequests);
 console.log('Starting the server...');
 
-server.listen(port, () => {
-    console.log(`Server is running at http://localhost:${port}`);
+server.listen(conf.PORT, () => {
+    console.log(`Server is running at http://localhost:${conf.PORT}`);
 });
