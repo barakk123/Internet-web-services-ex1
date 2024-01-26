@@ -42,11 +42,11 @@ function handleConflictError(res, status, message) {
 function handleInternalServerError(res, status, message) {
     if (res) {
         console.error(`Internal Server Error - ${message}`);
-        res.writeHead(status, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ message: `Internal Server Error - ${message}` }));
-        throw new Error(`Internal Server Error - ${message}`);
+        return res.status(status).json({ message: `Internal Server Error - ${message}` });
     }
+    throw new Error(`Internal Server Error - ${message}`);
 }
+
 
 function isValidDate(dateString) {
     const regex = /^(\d{4}([./-])\d{2}\2\d{2})$/;
@@ -106,7 +106,13 @@ class emergencySuppliers {
                 handleValidationError(res, `Missing required fields: ${missingFields.join(', ')}`);
                 return;
             }
+            const existingSupply = this.getSupply(supply.supply_name);
     
+            if (existingSupply) {
+                // If supply with the same name already exists
+                return handleConflictError(res, 409, `Supply with name ${supply.supply_name} already exists.`);
+            }
+            
             // Additional validation for numeric fields
             const invalidNumericFields = getInvalidNumericFields(supply);
     
@@ -118,15 +124,6 @@ class emergencySuppliers {
             // Check expiration_date
             if (supply.expiration_date !== undefined && supply.expiration_date !== null && !isValidDate(supply.expiration_date)) {
                 handleValidationError(res, 'Invalid input: Invalid date format for expiration_date.\nValid expiration date formats: YYYY/MM/DD, YYYY-MM-DD, YYYY.MM.DD');
-                return;
-            }
-            
-    
-            const existingSupply = this.getSupply(supply.supply_name);
-    
-            if (existingSupply) {
-                // If supply with the same name already exists
-                handleConflictError(res, 'Supply already exists.');
                 return;
             }
     
@@ -194,7 +191,8 @@ class emergencySuppliers {
 
             const invalidNumericFields = getInvalidNumericFields(updatedSupply);
     
-            if (invalidNumericFields.length > 0 && invalidNumericFields.every(field => updatedSupply[field] === undefined)) {
+            if (invalidNumericFields.length > 0 && invalidNumericFields.every(field => updatedSupply[field] !== undefined))
+            {
                 handleValidationError(res, `Invalid input: Numeric fields (${invalidNumericFields.join(', ')}) must be non-negative numbers.`);
                 return;
             }

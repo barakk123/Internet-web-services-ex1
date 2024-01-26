@@ -59,34 +59,6 @@ async function fetchSupplies() {
     }
 }
 
-/*function updateSupply() {
-    const formData = new FormData(document.getElementById("createSupplyForm"));
-    const jsonData = {};
-
-    formData.forEach((value, key) => {
-        jsonData[key] = value;
-    });
-
-    const supplyName = jsonData.supply_name;
-
-    fetch(`http://localhost:3000/supplies/${encodeURIComponent(supplyName)}`, {
-        method: "PUT",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(jsonData)
-    })
-    .then(response => response.json())
-    .then(data => {
-        document.getElementById("messages").innerText = data.message;
-        fetchSupplies(); // Refresh supplies list after updating a supply
-    })
-    .catch(error => {
-        document.getElementById("messages").innerText = "Error updating supply.";
-    });
-}
-*/
-
 function updateSupplyKeepTheEmptyVals() {
     const formData = new FormData(document.getElementById("createSupplyForm"));
     const jsonData = {};
