@@ -92,9 +92,9 @@ This project is licensed under the [MIT License](LICENSE.txt).
 - As a Software Engineer student at The Department of Software Engineering, Shenkar - This is the first exercise in the Web Services course.
 - I have learned a lot from this exercise and I can't wait for the next one!
 - As mentioned this is the first exercise, which means.. NOT everything is perfect! There are some problems...
-	*The code structure could be optimized to reduce redundancy, especially in the functions related to handling supplies.
-	*Inconsistent Data Validation
-	*UI/UX Enhancements
+	* The code structure could be optimized to reduce redundancy, especially in the functions related to handling supplies.
+	* Inconsistent Data Validation
+	* UI/UX Enhancements
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
 Thank you for reading this and for checking out my mini project
