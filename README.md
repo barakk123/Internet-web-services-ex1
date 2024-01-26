@@ -66,7 +66,7 @@ To run the tests for the Emergency Supplier project, follow these steps:
 
 	npm test
 
-- I have also supplied basic test file name: emergencySuppliers.test.js that you can use.
+- I have also supplied basic test file name: [emergencySuppliers.test.js](emergencySuppliers.test.js) that you can use.
 
 
 ## Contributing
