@@ -38,7 +38,7 @@ The application will be accessible at http://localhost:3000
 You can also open the file [Index.html](Index.html) for the UI.
 
 
-#### Usage + Endpoints (API Documentation)
+### Usage + Endpoints (API Documentation)
 
 For detailed API documentation, please visit the [Postman Cloud documentation](https://documenter.getpostman.com/view/32179347/2s9YypG48k).
 
@@ -50,7 +50,7 @@ There you can find detailed information on:
 -Example requests and responses.
 
 
-##### Testing
+### Testing
 
 To run the tests for the Emergency Supplier project, follow these steps:
 
@@ -69,7 +69,7 @@ To run the tests for the Emergency Supplier project, follow these steps:
 - I have also supplied basic test file name: emergencySuppliers.test.js that you can use.
 
 
-###### Contributing
+### Contributing
 
 Contributions are welcome! If you'd like to contribute to the project, follow these steps:
 
@@ -82,12 +82,12 @@ Contributions are welcome! If you'd like to contribute to the project, follow th
 Please make sure to update tests as appropriate.
 
 
-####### License
+### License
 
 This project is licensed under the [MIT License](LICENSE.txt).
 
 
-######## Acknowledgments
+### Acknowledgments
 
 - As a Software Engineer student at The Department of Software Engineering, Shenkar - This is the first exercise in the Web Services course.
 - I have learned a lot from this exercise and I can't wait for the next one!
