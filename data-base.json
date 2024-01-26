@@ -80,6 +80,24 @@
       "expiration_date": "",
       "supplier": "asd",
       "location": "sad"
+    },
+    {
+      "supply_name": "Test Supply",
+      "category": "Test Category",
+      "unit_price": 10.99,
+      "quantity": 50,
+      "expiration_date": "2024-12-31",
+      "supplier": "Test Supplier",
+      "location": "Test Location"
+    },
+    {
+      "supply_name": "Existing Supply",
+      "category": "Existing Category",
+      "unit_price": 15.99,
+      "quantity": 30,
+      "expiration_date": "2023-06-30",
+      "supplier": "Existing Supplier",
+      "location": "Existing Location"
     }
   ]
 }

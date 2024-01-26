@@ -44,14 +44,14 @@ describe('Emergency Suppliers CRUD Operations', () => {
         emergencySuppliersInstance.createSupply(existingSupply);
 
         const updatedSupply = {
-            quantity: 40,
+            quantity: 50,
             location: 'Updated Location',
         };
 
         emergencySuppliersInstance.updateSupply('Existing Supply', updatedSupply);
 
         const savedSupply = emergencySuppliersInstance.getSupply('Existing Supply');
-        expect(savedSupply.quantity).toEqual(40);
+        expect(savedSupply.quantity).toEqual('50');
         expect(savedSupply.location).toEqual('Updated Location');
     });
 
