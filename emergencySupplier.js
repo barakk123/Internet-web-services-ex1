@@ -1,5 +1,76 @@
 const fileSystem = require('fs');
 
+function getMissingFields(supply) {
+    const requiredFields = ['supply_name', 'category', 'unit_price', 'quantity', 'supplier', 'location'];
+    return requiredFields.filter(field =>
+        !supply.hasOwnProperty(field) ||
+        supply[field] === null ||
+        supply[field] === undefined ||
+        (typeof supply[field] === 'string' && supply[field].trim() === '')
+    );
+}
+
+function getInvalidNumericFields(supply) {
+    const numericFields = ['unit_price', 'quantity'];
+
+    return numericFields.filter(field => {
+        const value = supply[field];
+        const isNumericString = typeof value === 'string' && !isNaN(parseFloat(value));
+        return (isNaN(value) || +value < 0) && !isNumericString;
+    });
+}
+
+
+function handleValidationError(res, status, message) {
+    if (res) {
+        console.error(`Bad Request - Invalid input: ${message}`);
+        res.writeHead(status, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ message: `Bad Request - Invalid input: ${message}` }));
+        throw new Error(`Bad Request - Invalid input: ${message}`);
+    }
+}
+
+function handleConflictError(res, status, message) {
+    if (res) {
+        console.error(`Conflict - ${message}`);
+        res.writeHead(status, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ message: `Conflict - ${message}` }));
+        throw new Error(`Conflict - ${message}`);
+    }
+}
+
+function handleInternalServerError(res, status, message) {
+    if (res) {
+        console.error(`Internal Server Error - ${message}`);
+        return res.status(status).json({ message: `Internal Server Error - ${message}` });
+    }
+    throw new Error(`Internal Server Error - ${message}`);
+}
+
+
+function isValidDate(dateString) {
+    const regex = /^(\d{4}([./-])\d{2}\2\d{2})$/;
+    if (!regex.test(dateString)) {
+        return false;
+    }
+
+    const [year, month, day] = dateString.split(/[-./]/);
+
+    if (parseInt(month, 10) > 12 || parseInt(day, 10) > 31) {
+        return false;
+    }
+
+    return true;
+}
+
+function convertToNumberIfDefined(obj, fields) {
+    fields.forEach(field => {
+        if (obj[field] !== undefined && obj[field] !== null && obj[field] !== '') {
+            obj[field] = parseFloat(obj[field]);
+        }
+    });
+}
+
 
 class emergencySuppliers {
     constructor(jsonPath) {
@@ -29,36 +100,33 @@ class emergencySuppliers {
     createSupply(supply, res) {
         try {
             // Validate input fields
-            const requiredFields = ['supply_name', 'category', 'unit_price', 'quantity', 'supplier', 'location'];
-            const missingFields = requiredFields.filter(field => 
-                !supply.hasOwnProperty(field) || 
-                supply[field] === null || 
-                supply[field] === undefined || 
-                supply[field].trim() === ''
-            );
-    
+            const missingFields = getMissingFields(supply);
+            Object.keys(supply).forEach(key => { if (['quantity', 'unit_price'].includes(key)) supply[key] = parseFloat(supply[key]); });
             if (missingFields.length > 0) {
-                console.error('Invalid input: Missing required fields.');
-                return res.status(400).json({ message: 'Bad Request - Invalid input: Missing required fields.' });
+                handleValidationError(res, `Missing required fields: ${missingFields.join(', ')}`);
+                return;
             }
-    
-            // Additional validation for numeric fields
-            const numericFields = ['unit_price', 'quantity'];
-            const invalidNumericFields = numericFields.filter(field => isNaN(supply[field]) || supply[field] < 0);
-    
-            if (invalidNumericFields.length > 0) {
-                console.error(`Invalid input: Numeric fields (${invalidNumericFields.join(', ')}) must be non-negative numbers.`);
-                return res.status(400).json({ message: `Bad Request - Invalid input: Numeric fields (${invalidNumericFields.join(', ')}) must be non-negative numbers.` });
-            }
-    
             const existingSupply = this.getSupply(supply.supply_name);
     
             if (existingSupply) {
                 // If supply with the same name already exists
-                console.error(`Supply with name ${supply.supply_name} already exists.`);
-                return res.status(409).json({ message: 'Conflict - Supply already exists.' });
+                return handleConflictError(res, 409, `Supply with name ${supply.supply_name} already exists.`);
             }
-
+            
+            // Additional validation for numeric fields
+            const invalidNumericFields = getInvalidNumericFields(supply);
+    
+            if (invalidNumericFields.length > 0 && invalidNumericFields.every(field => supply[field] === undefined)) {
+                handleValidationError(res, `Invalid input: Numeric fields (${invalidNumericFields.join(', ')}) must be non-negative numbers.`);
+                return;
+            }
+    
+            // Check expiration_date
+            if (supply.expiration_date !== undefined && supply.expiration_date !== null && !isValidDate(supply.expiration_date)) {
+                handleValidationError(res, 'Invalid input: Invalid date format for expiration_date.\nValid expiration date formats: YYYY/MM/DD, YYYY-MM-DD, YYYY.MM.DD');
+                return;
+            }
+    
             const newSupply = new EmergencySupplierSession(
                 supply.supply_name,
                 supply.category,
@@ -68,21 +136,23 @@ class emergencySuppliers {
                 supply.supplier,
                 supply.location
             );
-                
+    
             this.data.emergency_supplies.push(newSupply);
             this.saveData();
-            console.log(`Supply with name ${supply.supply_name} created successfully.`);
-            return res.status(200).json({ message: 'New supply created successfully.' });
+    
+            if (res) {
+                console.log(`New supply created successfully.`);
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ message: 'New supply created successfully.' }));
+            }
         } catch (error) {
-            if (res) {// Handle other actions for error as needed
-            console.error('Error creating supply:', error.message);
-            return res.status(500).json({ message: `Internal Server Error - ${error.message}` });
+            if (res) {
+                // Handle other actions for error as needed
+                handleInternalServerError(res, error.message);
             }
         }
     }
     
-    
-
     getAllSupplies() {
         return this.data.emergency_supplies;
     }
@@ -107,19 +177,31 @@ class emergencySuppliers {
             return null;
         }
     }
+    
     updateSupply(supplyName, updatedSupply, res) {
         try {
             if (!supplyName || !updatedSupply || Object.keys(updatedSupply).length === 0) {
                 throw new Error('Bad Request - Invalid input: Missing required parameters.');
             }
     
-            // Additional validation for numeric fields
-            ['unit_price', 'quantity'].forEach(field => {
-                if (updatedSupply[field] !== undefined && (isNaN(updatedSupply[field]) || updatedSupply[field] < 0)) {
-                    console.error(`Invalid input: Numeric field (${field}) must be a non-negative number.`);
-                    throw new Error(`Bad Request - Invalid input: Numeric field (${field}) must be a non-negative number.`);
-                }
-            });
+             // Remove empty and undefined values
+            Object.keys(updatedSupply).forEach(key => (updatedSupply[key] === '' || updatedSupply[key] === undefined) && delete updatedSupply[key]);
+
+            convertToNumberIfDefined(updatedSupply, ['quantity', 'unit_price']);
+
+            const invalidNumericFields = getInvalidNumericFields(updatedSupply);
+    
+            if (invalidNumericFields.length > 0 && invalidNumericFields.every(field => updatedSupply[field] !== undefined))
+            {
+                handleValidationError(res, `Invalid input: Numeric fields (${invalidNumericFields.join(', ')}) must be non-negative numbers.`);
+                return;
+            }
+
+            // Check expiration_date
+            if (updatedSupply.expiration_date !== undefined && updatedSupply.expiration_date !== null && !isValidDate(updatedSupply.expiration_date)) {
+                console.error('Invalid input: Expiration date is not valid.\nValid expiration date formats: YYYY/MM/DD, YYYY-MM-DD, YYYY.MM.DD or keep empty');
+                return res.status(400).json({ message: 'Bad Request - Invalid input: Expiration date is not valid.\nValid expiration date formats: YYYY/MM/DD, YYYY-MM-DD, YYYY.MM.DD or keep empty' });
+            }
     
             const index = this.data.emergency_supplies.findIndex(supply => supply.supply_name === supplyName);
     
@@ -136,12 +218,12 @@ class emergencySuppliers {
         } catch (error) {
             console.error('Error updating supply:', error.message);
             if (res) {
-                console.error('Error updating supply:', error.message);
                 const statusCode = error.message.includes('Bad Request') ? 400 : (error.message.includes('Not Found') ? 404 : 500);
                 return res.status(statusCode).json({ message: error.message });
             }
         }
     }
+    
     
     deleteSupply(supplyName, res) {
         try {
@@ -175,6 +257,7 @@ class emergencySuppliers {
     }
     
 }
+
 
 class EmergencySupplierSession {
     constructor(supply_name, category, unit_price, quantity, expiration_date, supplier, location) {

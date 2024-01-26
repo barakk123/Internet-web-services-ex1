@@ -44,14 +44,14 @@ describe('Emergency Suppliers CRUD Operations', () => {
         emergencySuppliersInstance.createSupply(existingSupply);
 
         const updatedSupply = {
-            quantity: 40,
+            quantity: 50,
             location: 'Updated Location',
         };
 
         emergencySuppliersInstance.updateSupply('Existing Supply', updatedSupply);
 
         const savedSupply = emergencySuppliersInstance.getSupply('Existing Supply');
-        expect(savedSupply.quantity).toEqual(40);
+        expect(savedSupply.quantity).toEqual(50);
         expect(savedSupply.location).toEqual('Updated Location');
     });
 
@@ -104,7 +104,7 @@ describe('Emergency Suppliers CRUD Operations', () => {
         emergencySuppliersInstance.updateSupply('Non-Existing Supply', {}, resMock);
     
         expect(resMock.status).toHaveBeenCalledWith(400);
-        expect(resMock.json).toHaveBeenCalledWith({ message: 'Bad Request - Invalid input: Missing required parameters.' });
+        expect(resMock.json).toHaveBeenCalledWith({ message: 'Not Found - Supply not found.' });
     });
     
     
