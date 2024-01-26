@@ -35,7 +35,7 @@ Start the application with the following command:
 	npm start
 
 The application will be accessible at http://localhost:3000
-You can also open the file [Index.html](Index.html) for the UI.
+You can also open the file [Index.html](index.html) for the UI.
 
 
 ## Usage + Endpoints (API Documentation)
